@@ -6,6 +6,7 @@ import {
   NotFoundException,
   Logger,
   BadRequestException,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -13,6 +14,7 @@ import {
   ApiResponse,
   ApiParam,
   ApiQuery,
+  ApiBearerAuth,
 } from '@nestjs/swagger';
 import { FmpApiService } from '../services/fmp-api.service';
 import { StockQuoteDto } from '../dto/stock-quote.dto';
@@ -21,8 +23,11 @@ import {
   StockSearchResultDto,
   StockSearchResponseDto,
 } from '../dto/stock-search-result.dto';
+import { JwtAuthGuard } from '../../auth/guards/jwt-auth.guard';
 
 @ApiTags('stocks')
+@UseGuards(JwtAuthGuard)
+@ApiBearerAuth()
 @Controller('stocks')
 export class StocksController {
   private readonly logger = new Logger(StocksController.name);
