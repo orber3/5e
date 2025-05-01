@@ -5,6 +5,8 @@ import { AppService } from './app.service';
 import { ExamplesModule } from './examples/examples.module';
 import { DatabaseModule } from './database/database.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
+import { UsersModule } from './users/users.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -13,6 +15,8 @@ import { LoggerMiddleware } from './middleware/logger.middleware';
     }),
     DatabaseModule,
     ExamplesModule,
+    UsersModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

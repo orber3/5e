@@ -1,7 +1,8 @@
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app/app.module';
+import cookieParser from 'cookie-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -15,11 +16,25 @@ async function bootstrap() {
     credentials: true,
   });
 
+  // Use cookie-parser middleware
+  app.use(cookieParser());
+
+  // Use global validation pipe
+  app.useGlobalPipes(
+    new ValidationPipe({
+      whitelist: true, // Strip properties that don't have decorators
+      transform: true, // Transform payloads to DTOs
+      forbidNonWhitelisted: true, // Throw error if non-whitelisted properties are present
+    })
+  );
+
   // Setup Swagger
   const config = new DocumentBuilder()
     .setTitle('API Documentation')
     .setDescription('API documentation for the application')
     .setVersion('1.0')
+    .addBearerAuth() // Add bearer auth support for Swagger
+    .addCookieAuth('auth_token') // Add cookie auth support for Swagger
     .build();
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup(`${globalPrefix}/docs`, app, document);
