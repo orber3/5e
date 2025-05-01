@@ -3,6 +3,7 @@ import { Navigate, Outlet } from 'react-router-dom';
 import { Spin } from 'antd';
 import useAuth from '../../hooks/useAuth';
 import AppRoutes from '../../routes';
+import ProtectedLayout from '../layout/ProtectedLayout';
 
 export const ProtectedRoute: React.FC = () => {
   const { isAuthenticated, loading } = useAuth();
@@ -22,7 +23,13 @@ export const ProtectedRoute: React.FC = () => {
     );
   }
 
-  return isAuthenticated ? <Outlet /> : <Navigate to={AppRoutes.LOGIN} />;
+  return isAuthenticated ? (
+    <ProtectedLayout>
+      <Outlet />
+    </ProtectedLayout>
+  ) : (
+    <Navigate to={AppRoutes.LOGIN} />
+  );
 };
 
 export default ProtectedRoute;
