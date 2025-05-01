@@ -7,6 +7,8 @@ import { DatabaseModule } from './database/database.module';
 import { LoggerMiddleware } from './middleware/logger.middleware';
 import { UsersModule } from './users/users.module';
 import { AuthModule } from './auth/auth.module';
+import { StocksModule } from './stocks/stocks.module';
+import { PortfolioModule } from './portfolio/portfolio.module';
 
 @Module({
   imports: [
@@ -17,6 +19,8 @@ import { AuthModule } from './auth/auth.module';
     ExamplesModule,
     UsersModule,
     AuthModule,
+    StocksModule,
+    PortfolioModule,
   ],
   controllers: [AppController],
   providers: [AppService],
