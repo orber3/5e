@@ -8,6 +8,7 @@ import {
   Put,
   Query,
   UseGuards,
+  Req,
 } from '@nestjs/common';
 import {
   ApiTags,
@@ -23,11 +24,26 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { UserResponseDto } from './dto/user-response.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
+import type { Request } from 'express';
 
 @ApiTags('users')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
+
+  @Get('me')
+  @UseGuards(JwtAuthGuard)
+  @ApiBearerAuth()
+  @ApiOperation({ summary: 'Get the currently authenticated user' })
+  @ApiResponse({
+    status: 200,
+    description: 'Returns the currently authenticated user',
+    type: UserResponseDto,
+  })
+  async getCurrentUser(@Req() req: Request) {
+    // The user is attached to the request by the JwtStrategy
+    return req.user;
+  }
 
   @Get()
   @UseGuards(JwtAuthGuard)

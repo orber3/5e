@@ -4,6 +4,7 @@ import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { UsersService } from '../../users/users.service';
 import { Request } from 'express';
+import { User } from '../../users/schemas/user.schema';
 
 interface JwtPayload {
   sub: string;
@@ -34,7 +35,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     });
   }
 
-  async validate(payload: JwtPayload) {
+  async validate(payload: JwtPayload): Promise<User> {
     const user = await this.usersService.getUserById(payload.sub);
     if (!user) {
       throw new UnauthorizedException('User not found');

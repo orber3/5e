@@ -2,7 +2,7 @@ import axios, { AxiosInstance, AxiosRequestConfig, AxiosResponse } from 'axios';
 import { environment } from '../environment';
 
 /**
- * HTTP Service for API calls
+ * HTTP Service for API calls with cookie support
  */
 export class HttpService {
   private api: AxiosInstance;
@@ -15,20 +15,9 @@ export class HttpService {
       headers: {
         'Content-Type': 'application/json',
       },
+      // This is crucial for cookie-based auth
+      withCredentials: true,
     });
-
-    // Add request interceptor for auth tokens if needed
-    this.api.interceptors.request.use(
-      (config) => {
-        // You can add auth token here
-        // const token = localStorage.getItem('token');
-        // if (token) {
-        //   config.headers.Authorization = `Bearer ${token}`;
-        // }
-        return config;
-      },
-      (error) => Promise.reject(error)
-    );
 
     // Add response interceptor for error handling
     this.api.interceptors.response.use(
@@ -37,8 +26,8 @@ export class HttpService {
         // Handle errors globally
         // For example, redirect to login if 401 unauthorized
         if (error.response?.status === 401) {
-          // Handle unauthorized error
-          // window.location.href = '/login';
+          // Handle unauthorized error - will be handled by auth hook
+          console.error('Unauthorized request');
         }
         return Promise.reject(error);
       }

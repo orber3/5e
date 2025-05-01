@@ -1,30 +1,31 @@
-import NxWelcome from './nx-welcome';
-
-import { Route, Routes, Link } from 'react-router-dom';
-import { ExampleApiService } from './services/example-api.service';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import React from 'react';
+import { Routes, Route, Navigate } from 'react-router-dom';
+import AppRoutes from './routes';
+import WelcomePage from './pages/WelcomePage';
+import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
+import DashboardPage from './pages/DashboardPage';
+import ProtectedRoute from './components/auth/ProtectedRoute';
+import { ConfigProvider } from 'antd';
 
 export function App() {
-  const exampleApiService = new ExampleApiService();
-  const [names, setNames] = useState<string[]>([]);
-
-  useEffect(() => {
-    exampleApiService
-      .getNames()
-      .then((response) => setNames(response.names || []));
-  }, []);
-
   return (
-    <div>
-      <div>
-        {names.map((name) => (
-          <div className="text-2xl" key={name}>
-            {name}
-          </div>
-        ))}
-      </div>
-    </div>
+    <ConfigProvider>
+      <Routes>
+        <Route path={AppRoutes.WELCOME} element={<WelcomePage />} />
+        <Route path={AppRoutes.LOGIN} element={<LoginPage />} />
+        <Route path={AppRoutes.REGISTER} element={<RegisterPage />} />
+
+        {/* Protected Routes */}
+        <Route element={<ProtectedRoute />}>
+          <Route path={AppRoutes.DASHBOARD} element={<DashboardPage />} />
+          {/* Add more protected routes here */}
+        </Route>
+
+        {/* Fallback route */}
+        <Route path="*" element={<Navigate to={AppRoutes.LOGIN} replace />} />
+      </Routes>
+    </ConfigProvider>
   );
 }
 
