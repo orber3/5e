@@ -15,18 +15,18 @@ export class HttpService {
       headers: {
         'Content-Type': 'application/json',
       },
-      // This is crucial for cookie-based auth
+
       withCredentials: true,
     });
 
-    // Add response interceptor for error handling
+
     this.api.interceptors.response.use(
       (response) => response,
       (error) => {
         // Handle errors globally
-        // For example, redirect to login if 401 unauthorized
+
         if (error.response?.status === 401) {
-          // Handle unauthorized error - will be handled by auth hook
+
           console.error('Unauthorized request');
         }
         return Promise.reject(error);

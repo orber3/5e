@@ -18,7 +18,7 @@ export interface User {
 }
 
 export interface AuthResponse {
-  accessToken: string; // This might not be used directly in the UI as it's in an HTTP-only cookie
+  accessToken: string; 
   user: User;
 }
 

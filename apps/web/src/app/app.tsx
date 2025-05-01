@@ -19,7 +19,7 @@ export function App() {
         {/* Protected Routes */}
         <Route element={<ProtectedRoute />}>
           <Route path={AppRoutes.DASHBOARD} element={<DashboardPage />} />
-          {/* Add more protected routes here */}
+
         </Route>
 
         {/* Fallback route */}
