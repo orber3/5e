@@ -48,7 +48,7 @@ export const useRegister = () => {
       });
 
       // Navigate to dashboard - no need to store anything in localStorage
-      navigate(AppRoutes.DASHBOARD);
+      navigate(AppRoutes.PORTFOLIO);
     } catch (err: any) {
       setError(
         err.response?.data?.message || 'Registration failed. Please try again.'

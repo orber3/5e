@@ -30,11 +30,15 @@ export class StocksController {
   constructor(private fmpApiService: FmpApiService) {}
 
   @Get('search')
-  @ApiOperation({ summary: 'Search for stocks by symbol or name' })
-  @ApiQuery({ name: 'query', required: true, description: 'Search term' })
+  @ApiOperation({ summary: 'Search for stocks by symbol' })
+  @ApiQuery({
+    name: 'query',
+    required: true,
+    description: 'Search term for stock symbols',
+  })
   @ApiResponse({
     status: 200,
-    description: 'List of stocks matching the search',
+    description: 'List of stocks matching the symbol search',
     type: StockSearchResponseDto,
   })
   async searchStocks(
@@ -52,8 +56,8 @@ export class StocksController {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Error searching stocks: ${errorMessage}`);
-      throw new BadRequestException('Error searching for stocks');
+      this.logger.error(`Error searching stocks by symbol: ${errorMessage}`);
+      throw new BadRequestException('Error searching for stocks by symbol');
     }
   }
 
@@ -66,7 +70,7 @@ export class StocksController {
   })
   @ApiResponse({
     status: 200,
-    description: 'List of companies matching the search',
+    description: 'List of companies matching the name search',
     type: StockSearchResponseDto,
   })
   async searchCompaniesByName(
@@ -84,8 +88,66 @@ export class StocksController {
     } catch (error: unknown) {
       const errorMessage =
         error instanceof Error ? error.message : 'Unknown error';
-      this.logger.error(`Error searching companies: ${errorMessage}`);
-      throw new BadRequestException('Error searching for companies');
+      this.logger.error(`Error searching companies by name: ${errorMessage}`);
+      throw new BadRequestException('Error searching for companies by name');
+    }
+  }
+
+  @Get('search-combined')
+  @ApiOperation({
+    summary: 'Search for stocks by both symbol and company name',
+  })
+  @ApiQuery({
+    name: 'query',
+    required: true,
+    description:
+      'Search term to match against both stock symbols and company names',
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'List of stocks matching the search by symbol or name',
+    type: StockSearchResponseDto,
+  })
+  async searchStocksBySymbolAndName(
+    @Query('query') query: string
+  ): Promise<{ results: StockSearchResultDto[] }> {
+    if (!query || query.trim().length < 2) {
+      throw new BadRequestException(
+        'Search query must be at least 2 characters'
+      );
+    }
+
+    try {
+      // Search by both symbol and name
+      const [symbolResults, nameResults] = await Promise.all([
+        this.fmpApiService.searchStocks(query),
+        this.fmpApiService.searchCompaniesByName(query),
+      ]);
+
+      // Deduplicate results using a Map with symbol as key
+      const resultsMap = new Map<string, StockSearchResultDto>();
+
+      // Add symbol results to the map
+      symbolResults.forEach((stock) => {
+        resultsMap.set(stock.symbol, stock);
+      });
+
+      // Add name results, not overwriting existing entries
+      nameResults.forEach((stock) => {
+        if (!resultsMap.has(stock.symbol)) {
+          resultsMap.set(stock.symbol, stock);
+        }
+      });
+
+      // Convert map back to array
+      const combinedResults = Array.from(resultsMap.values());
+
+      return { results: combinedResults };
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : 'Unknown error';
+      this.logger.error(`Error in combined stock search: ${errorMessage}`);
+      throw new BadRequestException('Error searching for stocks');
     }
   }
 

@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpModule } from '@nestjs/axios';
 import { ConfigModule } from '@nestjs/config';
+import { CacheModule } from '@nestjs/cache-manager';
 import { StocksModule } from './stocks.module';
 import { StocksController } from './controllers/stocks.controller';
 import { FmpApiService } from './services/fmp-api.service';
@@ -10,7 +11,12 @@ describe('StocksModule (Integration)', () => {
 
   beforeAll(async () => {
     module = await Test.createTestingModule({
-      imports: [StocksModule, HttpModule, ConfigModule.forRoot()],
+      imports: [
+        StocksModule,
+        HttpModule,
+        ConfigModule.forRoot(),
+        CacheModule.register(),
+      ],
     }).compile();
   });
 

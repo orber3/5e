@@ -2,9 +2,12 @@ import {
   Injectable,
   Logger,
   InternalServerErrorException,
+  Inject,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { HttpService } from '@nestjs/axios';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
+import type { Cache } from 'cache-manager';
 import { catchError, firstValueFrom, map } from 'rxjs';
 import { AxiosError, AxiosResponse } from 'axios';
 import { StockQuoteDto } from '../dto/stock-quote.dto';
@@ -16,12 +19,12 @@ export class FmpApiService {
   private readonly logger = new Logger(FmpApiService.name);
   private readonly apiKey: string;
   private readonly baseUrl = 'https://financialmodelingprep.com/stable';
-  private readonly cache = new Map<string, { data: any; timestamp: number }>();
-  private readonly CACHE_DURATION = 15 * 60 * 1000; // 15 minutes
+  private readonly CACHE_DURATION = 15 * 60; // 15 minutes in seconds
 
   constructor(
     private configService: ConfigService,
-    private httpService: HttpService
+    private httpService: HttpService,
+    @Inject(CACHE_MANAGER) private cacheManager: Cache
   ) {
     this.apiKey = this.configService.get<string>('FMP_API_KEY', '');
     if (!this.apiKey) {
@@ -43,10 +46,10 @@ export class FmpApiService {
     const cacheKey = this.getCacheKey(endpoint, params);
 
     // Check cache first
-    const cached = this.cache.get(cacheKey);
-    if (cached && Date.now() - cached.timestamp < this.CACHE_DURATION) {
+    const cachedData = await this.cacheManager.get<T>(cacheKey);
+    if (cachedData) {
       this.logger.debug(`Cache hit for ${cacheKey}`);
-      return cached.data as T;
+      return cachedData;
     }
 
     // Add API key to params
@@ -78,10 +81,7 @@ export class FmpApiService {
       );
 
       // Cache the successful response
-      this.cache.set(cacheKey, {
-        data: response,
-        timestamp: Date.now(),
-      });
+      await this.cacheManager.set(cacheKey, response, this.CACHE_DURATION);
 
       return response;
     } catch (error: unknown) {

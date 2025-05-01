@@ -40,6 +40,7 @@ describe('StocksController', () => {
           provide: FmpApiService,
           useValue: {
             searchStocks: jest.fn(),
+            searchCompaniesByName: jest.fn(),
             getStockQuote: jest.fn(),
             getStockDetails: jest.fn(),
           },
@@ -82,6 +83,110 @@ describe('StocksController', () => {
       await expect(controller.searchStocks('apple')).rejects.toThrow(
         BadRequestException
       );
+    });
+  });
+
+  describe('searchCompaniesByName', () => {
+    it('should return companies matching a name search query', async () => {
+      jest
+        .spyOn(fmpApiService, 'searchCompaniesByName')
+        .mockResolvedValue(mockSearchResults);
+
+      const result = await controller.searchCompaniesByName('apple');
+
+      expect(result).toEqual({ results: mockSearchResults });
+      expect(fmpApiService.searchCompaniesByName).toHaveBeenCalledWith('apple');
+    });
+
+    it('should throw BadRequestException when query is too short', async () => {
+      await expect(controller.searchCompaniesByName('a')).rejects.toThrow(
+        BadRequestException
+      );
+      expect(fmpApiService.searchCompaniesByName).not.toHaveBeenCalled();
+    });
+
+    it('should handle API errors and throw BadRequestException', async () => {
+      jest
+        .spyOn(fmpApiService, 'searchCompaniesByName')
+        .mockRejectedValue(new Error('API error'));
+
+      await expect(controller.searchCompaniesByName('apple')).rejects.toThrow(
+        BadRequestException
+      );
+    });
+  });
+
+  describe('searchStocksBySymbolAndName', () => {
+    const mockSymbolResults: StockSearchResultDto[] = [
+      { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ', type: 'stock' },
+      {
+        symbol: 'AAPL.BA',
+        name: 'Apple Inc.',
+        exchange: 'BCBA',
+        type: 'stock',
+      },
+    ];
+
+    const mockNameResults: StockSearchResultDto[] = [
+      { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ', type: 'stock' },
+      {
+        symbol: 'MSFT',
+        name: 'Apple Partner Inc.',
+        exchange: 'NASDAQ',
+        type: 'stock',
+      },
+    ];
+
+    const expectedCombinedResults: StockSearchResultDto[] = [
+      { symbol: 'AAPL', name: 'Apple Inc.', exchange: 'NASDAQ', type: 'stock' },
+      {
+        symbol: 'AAPL.BA',
+        name: 'Apple Inc.',
+        exchange: 'BCBA',
+        type: 'stock',
+      },
+      {
+        symbol: 'MSFT',
+        name: 'Apple Partner Inc.',
+        exchange: 'NASDAQ',
+        type: 'stock',
+      },
+    ];
+
+    it('should return combined and deduplicated results from both search methods', async () => {
+      jest
+        .spyOn(fmpApiService, 'searchStocks')
+        .mockResolvedValue(mockSymbolResults);
+      jest
+        .spyOn(fmpApiService, 'searchCompaniesByName')
+        .mockResolvedValue(mockNameResults);
+
+      const result = await controller.searchStocksBySymbolAndName('apple');
+
+      expect(result.results.length).toBe(3);
+      expect(result.results).toEqual(
+        expect.arrayContaining(expectedCombinedResults)
+      );
+      expect(fmpApiService.searchStocks).toHaveBeenCalledWith('apple');
+      expect(fmpApiService.searchCompaniesByName).toHaveBeenCalledWith('apple');
+    });
+
+    it('should throw BadRequestException when query is too short', async () => {
+      await expect(controller.searchStocksBySymbolAndName('a')).rejects.toThrow(
+        BadRequestException
+      );
+      expect(fmpApiService.searchStocks).not.toHaveBeenCalled();
+      expect(fmpApiService.searchCompaniesByName).not.toHaveBeenCalled();
+    });
+
+    it('should handle API errors and throw BadRequestException', async () => {
+      jest
+        .spyOn(fmpApiService, 'searchStocks')
+        .mockRejectedValue(new Error('API error'));
+
+      await expect(
+        controller.searchStocksBySymbolAndName('apple')
+      ).rejects.toThrow(BadRequestException);
     });
   });
 

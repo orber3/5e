@@ -1,8 +1,9 @@
 import React from 'react';
-import { Layout, Typography, Button } from 'antd';
+import { Layout, Typography, Button, Space } from 'antd';
 import { LogoutOutlined, UserOutlined } from '@ant-design/icons';
 import { APP_TITLE } from '@app/consts/strings';
 import { User } from '@app/services/auth.service';
+import StockSearchBar from '@app/components/layout/StockSearchBar';
 
 const { Header } = Layout;
 
@@ -27,14 +28,18 @@ export const AppHeader: React.FC<AppHeaderProps> = ({ user, logout }) => {
         {APP_TITLE}
       </Typography.Title>
 
-      <div style={{ display: 'flex', alignItems: 'center' }}>
-        <Typography.Text style={{ marginRight: 16 }}>
-          <UserOutlined /> {user?.email}
-        </Typography.Text>
-        <Button icon={<LogoutOutlined />} onClick={logout}>
-          Logout
-        </Button>
-      </div>
+      <Space size="large">
+        <StockSearchBar />
+
+        <Space>
+          <Typography.Text style={{ marginRight: 16 }}>
+            <UserOutlined /> {user?.email}
+          </Typography.Text>
+          <Button icon={<LogoutOutlined />} onClick={logout}>
+            Logout
+          </Button>
+        </Space>
+      </Space>
     </Header>
   );
 };

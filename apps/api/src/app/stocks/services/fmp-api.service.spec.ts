@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { HttpModule, HttpService } from '@nestjs/axios';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { of, throwError } from 'rxjs';
 import { AxiosError, AxiosResponse } from 'axios';
 import { FmpApiService } from './fmp-api.service';
@@ -10,8 +11,15 @@ describe('FmpApiService', () => {
   let service: FmpApiService;
   let httpService: HttpService;
   let configService: ConfigService;
+  let cacheManager: { get: jest.Mock; set: jest.Mock };
 
   beforeEach(async () => {
+    // Create cache manager mock
+    cacheManager = {
+      get: jest.fn(),
+      set: jest.fn(),
+    };
+
     const module: TestingModule = await Test.createTestingModule({
       imports: [HttpModule, ConfigModule],
       providers: [
@@ -26,6 +34,10 @@ describe('FmpApiService', () => {
               return defaultValue;
             }),
           },
+        },
+        {
+          provide: CACHE_MANAGER,
+          useValue: cacheManager,
         },
       ],
     }).compile();
@@ -56,6 +68,9 @@ describe('FmpApiService', () => {
         },
       ];
 
+      // Mock cache miss
+      cacheManager.get.mockResolvedValueOnce(null);
+
       jest.spyOn(httpService, 'get').mockImplementation(() =>
         of({
           data: mockResults,
@@ -75,6 +90,9 @@ describe('FmpApiService', () => {
     });
 
     it('should throw an error when API request fails', async () => {
+      // Mock cache miss
+      cacheManager.get.mockResolvedValueOnce(null);
+
       jest.spyOn(httpService, 'get').mockImplementation(() =>
         throwError(
           () =>
@@ -105,6 +123,9 @@ describe('FmpApiService', () => {
         },
       ];
 
+      // Mock cache miss
+      cacheManager.get.mockResolvedValueOnce(null);
+
       jest.spyOn(httpService, 'get').mockImplementation(() =>
         of({
           data: mockQuote,
@@ -124,6 +145,9 @@ describe('FmpApiService', () => {
     });
 
     it('should throw an error when no quote data is found', async () => {
+      // Mock cache miss
+      cacheManager.get.mockResolvedValueOnce(null);
+
       jest.spyOn(httpService, 'get').mockImplementation(() =>
         of({
           data: [],
@@ -164,6 +188,10 @@ describe('FmpApiService', () => {
 
       // Mock getStockQuote and makeRequest
       jest.spyOn(service, 'getStockQuote').mockResolvedValue(mockQuote[0]);
+
+      // Mock cache miss for profile request
+      cacheManager.get.mockResolvedValueOnce(null);
+
       jest.spyOn(httpService, 'get').mockImplementation((url) => {
         if (url.includes('profile')) {
           return of({
@@ -197,6 +225,10 @@ describe('FmpApiService', () => {
 
       // Mock getStockQuote and makeRequest
       jest.spyOn(service, 'getStockQuote').mockResolvedValue(mockQuote);
+
+      // Mock cache miss for profile request
+      cacheManager.get.mockResolvedValueOnce(null);
+
       jest.spyOn(httpService, 'get').mockImplementation((url) => {
         if (url.includes('profile')) {
           return of({
@@ -227,6 +259,9 @@ describe('FmpApiService', () => {
         },
       ];
 
+      // First call - cache miss
+      cacheManager.get.mockResolvedValueOnce(null);
+
       // Set up spy to track calls to HTTP service
       const getSpy = jest.spyOn(httpService, 'get').mockImplementation(() =>
         of({
@@ -240,11 +275,16 @@ describe('FmpApiService', () => {
 
       // First call should make a real request
       await service.getStockQuote('AAPL');
+      expect(getSpy).toHaveBeenCalledTimes(1);
+      expect(cacheManager.set).toHaveBeenCalled();
+
+      // Second call - cache hit
+      cacheManager.get.mockResolvedValueOnce(mockQuote[0]);
 
       // Second call should use cache
       await service.getStockQuote('AAPL');
 
-      // HTTP service should only be called once despite two service calls
+      // HTTP service should not be called twice
       expect(getSpy).toHaveBeenCalledTimes(1);
     });
   });

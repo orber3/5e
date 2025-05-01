@@ -31,7 +31,7 @@ export const useAuth = () => {
   const handleAuthSuccess = useCallback(
     (userData: User) => {
       setUser(userData);
-      navigate(AppRoutes.DASHBOARD);
+      navigate(AppRoutes.PORTFOLIO);
     },
     [navigate]
   );
