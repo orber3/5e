@@ -1,0 +1,35 @@
+FROM node:20-alpine AS build
+
+WORKDIR /app
+
+# Copy package files and install dependencies
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Copy the rest of the code
+COPY . .
+
+# Build the API application using NX
+RUN npx nx build api --configuration=development
+
+# Development stage
+FROM node:20-alpine AS runtime
+
+WORKDIR /app
+
+# Install development dependencies
+COPY package.json package-lock.json ./
+RUN npm ci
+
+# Copy built application from build stage
+COPY --from=build /app/dist/apps/api ./dist
+
+# Copy source code for better debugging (source maps)
+COPY --from=build /app/apps/api ./apps/api
+COPY --from=build /app/libs ./libs
+
+# Expose API port
+EXPOSE 3000
+
+# Start the API service with development mode
+CMD ["node", "dist/main.js"] 
