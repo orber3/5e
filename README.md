@@ -118,3 +118,140 @@ nx e2e web-e2e
 - `nx lint api`: Lint the API server code
 
 - The stock data cache duration is currently set to 15 minutes. In a production environment, this should be controlled from a remote key-value store for dynamic adjustments , and most likely will be implemented in a redis server.
+
+### Technical Architecture
+
+
+```mermaid
+flowchart TD
+    subgraph "Frontend - React"
+        UI[React UI]
+        StateManagement[MobX State]
+        UIComponents[Ant Design Components]
+        ReactHookForm[React Hook Form+Zod]
+        HTTPClient[Axios Client]
+        Charts[Recharts]
+        UI --> StateManagement
+        UI --> UIComponents
+        UI --> ReactHookForm
+        UIComponents
+        UI --> HTTPClient
+        UI --> Charts
+
+
+    end
+
+    subgraph "Backend - NestJS"
+        API[NestJS API]
+        AuthModule[Authentication Module]
+        UsersModule[Users Module]
+        StocksModule[Stocks Module]
+        PortfolioModule[Portfolio Module]
+        Middleware[Middleware]
+        ThrottlerGuard[Rate Limiting]
+
+        API --> AuthModule
+        API --> UsersModule
+        API --> StocksModule
+        API --> PortfolioModule
+        API --> Middleware
+        API --> ThrottlerGuard
+    end
+
+    subgraph "Database"
+        MongoDB[(MongoDB)]
+    end
+
+    subgraph "External Services"
+        StockAPI[External Stock API]
+    end
+
+    HTTPClient <--> API
+    StocksModule <--> StockAPI
+    AuthModule --> MongoDB
+    UsersModule --> MongoDB
+    StocksModule --> MongoDB
+    PortfolioModule --> MongoDB
+```
+
+## Data Flow Diagram
+
+```mermaid
+sequenceDiagram
+    actor User
+    participant UI as React UI
+    participant API as NestJS API
+    participant DB as MongoDB
+    participant External as Stock API
+
+    User->>UI: Register/Login
+    UI->>API: Authentication Request
+    API->>DB: Validate User
+    DB-->>API: User Data
+    API-->>UI: JWT Token
+
+    User->>UI: Search Stock
+    UI->>API: Stock Query
+    alt Cached Data Available
+        API->>DB: Check Cache
+        DB-->>API: Return Cached Data
+    else No Cache
+        API->>External: Fetch Stock Data
+        External-->>API: Stock Data
+        API->>DB: Cache Stock Data
+    end
+    API-->>UI: Return Stock Data
+
+    User->>UI: Add Stock to Portfolio
+    UI->>API: Portfolio Update
+    API->>DB: Save Portfolio
+    DB-->>API: Confirmation
+    API-->>UI: Update Success
+
+    User->>UI: View Portfolio
+    UI->>API: Get Portfolio
+    API->>DB: Fetch Portfolio
+    DB-->>API: Portfolio Data
+    API->>External: Get Latest Prices
+    External-->>API: Price Data
+    API-->>UI: Complete Portfolio with Prices
+```
+
+## Technical Stack
+
+- **Frontend**:
+
+  - React
+  - MobX
+  - React Router
+  - Ant Design
+  - Tailwind CSS
+  - Recharts for data visualization
+  - TypeScript
+
+- **Backend**:
+
+  - NestJS
+  - JWT Authentication
+  - Class Validator
+  - Swagger for API documentation
+  - Mongoose
+  - TypeScript
+
+- **Database**:
+
+  - MongoDB
+
+- **DevOps**:
+
+  - Docker
+  - Docker Compose
+  - Nginx for web serving
+
+- **Testing**:
+
+  - Jest for unit tests
+  - Playwright for E2E tests
+
+- **Infrastructure**:
+  - Nx Monorepo structure
