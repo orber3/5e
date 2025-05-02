@@ -1,34 +1,6 @@
 version: '3.8'
 
 services:
-  web:
-    build:
-      context: .
-      dockerfile: Dockerfile.web
-    container_name: web-app
-    ports:
-      - "3030:80"
-    environment:
-      - NODE_ENV=development
-      - VITE_API_BASE_URL=http://localhost:3000/api
-    depends_on:
-      - api
-    restart: unless-stopped
-
-  api:
-    build:
-      context: .
-      dockerfile: Dockerfile.api
-    container_name: api-service
-    ports:
-      - "3000:3000"
-    environment:
-      - NODE_ENV=development
-      - MONGODB_URI=mongodb://mongo:27017/onboarding
-    depends_on:
-      - mongo
-    restart: unless-stopped
-
   mongo:
     image: mongo:latest
     container_name: mongodb
@@ -37,7 +9,7 @@ services:
     volumes:
       - mongo-data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=onboarding
+      - MONGO_INITDB_DATABASE=five
     restart: unless-stopped
 
 volumes:

@@ -1,101 +1,120 @@
-# Y
+# Y - Stock Portfolio Application
 
-<a alt="Nx logo" href="https://nx.dev" target="_blank" rel="noreferrer"><img src="https://raw.githubusercontent.com/nrwl/nx/master/images/nx-logo.png" width="45"></a>
+A full-stack application for tracking stock portfolios built with NestJS, React, and MongoDB.
 
-✨ Your new, shiny [Nx workspace](https://nx.dev) is ready ✨.
+## Getting Started
 
-[Learn more about this workspace setup and its capabilities](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects) or run `npx nx graph` to visually explore what was created. Now, let's get you up to speed!
+### Prerequisites
 
-## Run tasks
+- Node.js (v18+)
+- Docker and Docker Compose
+- npm or yarn
 
-To run the dev server for your app, use:
+### Running the Application
 
-```sh
-npx nx serve web
+1. **Start the database container**
+
+```bash
+docker-compose up mongo -d
 ```
 
-To create a production bundle:
+2. **Start the application**
 
-```sh
-npx nx build web
+```bash
+npm run start
 ```
 
-To see all available targets to run for a project, run:
+This command starts both the API server and web client concurrently.
 
-```sh
-npx nx show project web
+3. **Access the application**
+
+- Frontend: [http://localhost:4200](http://localhost:4200)
+- API: [http://localhost:3001/api](http://localhost:3001/api)
+
+4. **Register a new account**
+
+Navigate to the registration page and create a new account with your email and password to start using the application.
+
+## Application Architecture
+
+### Overview
+
+This project is a monorepo managed with Nx, consisting of:
+
+- **Frontend**: React application for the user interface
+- **Backend**: NestJS API server
+- **Database**: MongoDB for data persistence
+- **E2E Testing**: Playwright for end-to-end tests
+
+### API Architecture
+
+The API is built with NestJS and follows a modular architecture:
+
+- **Authentication**: JWT-based authentication with secure cookie sessions
+- **Users**: User management and registration
+- **Stocks**: Stock data fetching and caching
+- **Portfolio**: User portfolio management
+- **Database**: MongoDB integration using Mongoose
+
+Key features:
+
+- RESTful API design
+- Request rate limiting
+- Data validation with class-validator
+- API documentation with Swagger
+- Caching for stock data to minimize external API calls
+
+### Frontend Architecture
+
+The web client is built with React and follows a modern architecture:
+
+- **State Management**: MobX for reactive state management
+- **Routing**: React Router for navigation
+- **UI Components**: Ant Design component library
+- **Forms**: React Hook Form with validation
+- **HTTP Client**: Axios for API requests
+- **Styling**: Tailwind CSS for utility-first styling
+- **Charts**: Recharts for data visualization
+
+The application is structured with:
+
+- Feature-based organization
+- Reusable components
+- Custom hooks for shared logic
+- Service layer for API interactions
+- Strong TypeScript typing
+
+## Testing
+
+### API Tests
+
+To run the API unit tests:
+
+```bash
+nx test api
 ```
 
-These targets are either [inferred automatically](https://nx.dev/concepts/inferred-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) or defined in the `project.json` or `package.json` files.
+These tests verify the functionality of API endpoints, services, and controllers.
 
-[More about running tasks in the docs &raquo;](https://nx.dev/features/run-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+### Frontend E2E Tests
 
-## Add new projects
+To run end-to-end tests for the web application:
 
-While you could add new projects to your workspace manually, you might want to leverage [Nx plugins](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) and their [code generation](https://nx.dev/features/generate-code?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) feature.
-
-Use the plugin's generator to create new projects.
-
-To generate a new application, use:
-
-```sh
-npx nx g @nx/react:app demo
+```bash
+nx e2e web-e2e
 ```
 
-To generate a new library, use:
+**Note**: The Playwright tests are currently experiencing issues related to rate limiting from external stock APIs. Some locators may need to be fixed to make the tests more reliable.
 
-```sh
-npx nx g @nx/react:lib mylib
-```
+## Development
 
-You can use `npx nx list` to get a list of installed plugins. Then, run `npx nx list <plugin-name>` to learn about more specific capabilities of a particular plugin. Alternatively, [install Nx Console](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) to browse plugins and generators in your IDE.
+### Available Commands
 
-[Learn more about Nx plugins &raquo;](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) | [Browse the plugin registry &raquo;](https://nx.dev/plugin-registry?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- `nx serve web`: Start the web client in development mode
+- `nx serve api`: Start the API server in development mode
+- `nx build web`: Build the web client for production
+- `nx build api`: Build the API server for production
+- `nx lint web`: Lint the web client code
+- `nx lint api`: Lint the API server code
 
-## Set up CI!
-
-### Step 1
-
-To connect to Nx Cloud, run the following command:
-
-```sh
-npx nx connect
-```
-
-Connecting to Nx Cloud ensures a [fast and scalable CI](https://nx.dev/ci/intro/why-nx-cloud?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects) pipeline. It includes features such as:
-
-- [Remote caching](https://nx.dev/ci/features/remote-cache?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task distribution across multiple machines](https://nx.dev/ci/features/distribute-task-execution?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Automated e2e test splitting](https://nx.dev/ci/features/split-e2e-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Task flakiness detection and rerunning](https://nx.dev/ci/features/flaky-tasks?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-### Step 2
-
-Use the following command to configure a CI workflow for your workspace:
-
-```sh
-npx nx g ci-workflow
-```
-
-[Learn more about Nx on CI](https://nx.dev/ci/intro/ci-with-nx#ready-get-started-with-your-provider?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Install Nx Console
-
-Nx Console is an editor extension that enriches your developer experience. It lets you run tasks, generate code, and improves code autocompletion in your IDE. It is available for VSCode and IntelliJ.
-
-[Install Nx Console &raquo;](https://nx.dev/getting-started/editor-setup?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-## Useful links
-
-Learn more:
-
-- [Learn more about this workspace setup](https://nx.dev/getting-started/tutorials/react-monorepo-tutorial?utm_source=nx_project&amp;utm_medium=readme&amp;utm_campaign=nx_projects)
-- [Learn about Nx on CI](https://nx.dev/ci/intro/ci-with-nx?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [Releasing Packages with Nx release](https://nx.dev/features/manage-releases?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-- [What are Nx plugins?](https://nx.dev/concepts/nx-plugins?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
-
-And join the Nx community:
-- [Discord](https://go.nx.dev/community)
-- [Follow us on X](https://twitter.com/nxdevtools) or [LinkedIn](https://www.linkedin.com/company/nrwl)
-- [Our Youtube channel](https://www.youtube.com/@nxdevtools)
-- [Our blog](https://nx.dev/blog?utm_source=nx_project&utm_medium=readme&utm_campaign=nx_projects)
+- The stock data cache duration is currently set to 15 minutes. In a production environment, this should be controlled from a remote key-value store for dynamic adjustments.

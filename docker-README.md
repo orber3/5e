@@ -13,13 +13,13 @@ The following services are configured:
 
 1. **Web Application (React)**:
 
-   - Runs on port 3030
+   - Runs on port 4200
    - Built with Vite
    - Uses NGINX as the web server
 
 2. **API Service (NestJS)**:
 
-   - Runs on port 3000
+   - Runs on port 3001
    - Connects to MongoDB
 
 3. **MongoDB**:
@@ -33,11 +33,11 @@ The required environment variables are:
 ```
 # API Environment Variables
 NODE_ENV=development
-API_PORT=3000
+API_PORT=3001
 MONGODB_URI=mongodb://mongo:27017/onboarding
 
 # Web Environment Variables
-VITE_API_BASE_URL=http://localhost:3000/api
+VITE_API_BASE_URL=http://localhost:3001/api
 ```
 
 ## Getting Started
@@ -50,8 +50,8 @@ docker-compose up --build
 ```
 
 3. Access the applications:
-   - Web: http://localhost:3030
-   - API: http://localhost:3000
+   - Web: http://localhost:4200
+   - API: http://localhost:3001
    - MongoDB: mongodb://localhost:27017
 
 ## Development Workflow

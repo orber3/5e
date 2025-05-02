@@ -25,10 +25,13 @@ export default defineConfig({
   /* Run your local dev server before starting the tests */
   webServer: {
     command: 'npx nx run web:preview',
-    url: 'http://localhost:4300',
+    url: 'http://localhost:4200',
     reuseExistingServer: !process.env.CI,
     cwd: workspaceRoot,
   },
+  // Only match spec files in web-e2e/src directory
+  testDir: './src',
+  testMatch: '**/*.spec.ts',
   projects: [
     {
       name: 'chromium',

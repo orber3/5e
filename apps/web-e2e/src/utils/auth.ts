@@ -6,9 +6,6 @@ import { Page } from '@playwright/test';
 export class Auth {
   readonly page: Page;
   readonly loginPath = '/login';
-  readonly emailInputSelector = 'input[type="email"]';
-  readonly passwordInputSelector = 'input[type="password"]';
-  readonly loginButtonSelector = 'button[type="submit"]';
 
   constructor(page: Page) {
     this.page = page;
@@ -22,12 +19,12 @@ export class Auth {
   async login(email: string, password: string) {
     await this.page.goto('http://localhost:4200/login');
 
-    // Fill in form fields
-    await this.page.fill(this.emailInputSelector, email);
-    await this.page.fill(this.passwordInputSelector, password);
+    // Fill in form fields using role-based selectors (more reliable than CSS selectors)
+    await this.page.getByRole('textbox', { name: 'Email' }).fill(email);
+    await this.page.getByRole('textbox', { name: 'Password' }).fill(password);
 
     // Click login button and wait for navigation
-    await this.page.click(this.loginButtonSelector);
+    await this.page.getByRole('button', { name: 'Log in' }).click();
     await this.page.waitForLoadState('domcontentloaded');
 
     // Wait for redirect after login (assumes redirect to portfolio)

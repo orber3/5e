@@ -17,9 +17,9 @@ import { StockSearchResultDto } from '../dto/stock-search-result.dto';
 @Injectable()
 export class FmpApiService {
   private readonly logger = new Logger(FmpApiService.name);
-  private readonly apiKey: string;
-  private readonly baseUrl = 'https://financialmodelingprep.com/api/v3';
-  private readonly CACHE_DURATION = 15 * 60; // 15 minutes in seconds
+  private readonly apiKey: string; // in a real app it will be controlled from a secret manager.(eg. aws secrets manager)
+  private readonly baseUrl = 'https://financialmodelingprep.com/api/v3'; // in a real app it will be controlled from remote KV store.
+  private readonly CACHE_DURATION = 15 * 60; // 15 minutes in seconds (in real app it will be controlled from remote KV store.)
 
   constructor(
     private configService: ConfigService,
