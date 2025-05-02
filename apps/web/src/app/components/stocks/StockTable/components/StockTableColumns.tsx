@@ -69,16 +69,16 @@ export const getStockTableColumns = ({
     },
     {
       title: 'Change',
-      dataIndex: ['quote', 'changePercentage'],
+      dataIndex: ['quote', 'changesPercentage'],
       key: 'change',
       sorter: (a: PortfolioStock, b: PortfolioStock) => {
-        const changeA = a.quote?.changePercentage || 0;
-        const changeB = b.quote?.changePercentage || 0;
+        const changeA = a.quote?.changesPercentage || 0;
+        const changeB = b.quote?.changesPercentage || 0;
         return changeA - changeB;
       },
       sortOrder: sortedInfo.columnKey === 'change' && sortedInfo.order,
       render: (_: any, record: PortfolioStock) =>
-        formatPercentageChange(record.quote?.changePercentage),
+        formatPercentageChange(record.quote?.changesPercentage),
     },
     {
       title: 'Added On',

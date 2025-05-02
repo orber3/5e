@@ -18,7 +18,7 @@ import { StockSearchResultDto } from '../dto/stock-search-result.dto';
 export class FmpApiService {
   private readonly logger = new Logger(FmpApiService.name);
   private readonly apiKey: string;
-  private readonly baseUrl = 'https://financialmodelingprep.com/stable';
+  private readonly baseUrl = 'https://financialmodelingprep.com/api/v3';
   private readonly CACHE_DURATION = 15 * 60; // 15 minutes in seconds
 
   constructor(
@@ -60,7 +60,14 @@ export class FmpApiService {
       .map(([key, value]) => `${key}=${encodeURIComponent(value)}`)
       .join('&');
 
-    const url = `${this.baseUrl}/${endpoint}?${queryString}`;
+    // Handle special case for quote endpoint with symbol parameter
+    let url: string;
+    if (endpoint === 'quote' && params.symbol) {
+      // For quote endpoint in legacy API, symbol is part of the URL path
+      url = `${this.baseUrl}/${endpoint}/${params.symbol}?apikey=${this.apiKey}`;
+    } else {
+      url = `${this.baseUrl}/${endpoint}?${queryString}`;
+    }
 
     this.logger.debug(`Making API request to ${url}`);
 
@@ -97,16 +104,40 @@ export class FmpApiService {
     }
   }
 
-  async searchStocks(query: string): Promise<StockSearchResultDto[]> {
-    return this.makeRequest<StockSearchResultDto[]>('search-symbol', {
-      query,
-    });
+  async searchStocks(
+    query: string,
+    limit?: number,
+    exchange?: string
+  ): Promise<StockSearchResultDto[]> {
+    const params: Record<string, string> = { query };
+
+    if (limit) {
+      params.limit = limit.toString();
+    }
+
+    if (exchange) {
+      params.exchange = exchange;
+    }
+
+    return this.makeRequest<StockSearchResultDto[]>('search-ticker', params);
   }
 
-  async searchCompaniesByName(query: string): Promise<StockSearchResultDto[]> {
-    return this.makeRequest<StockSearchResultDto[]>('search-name', {
-      query,
-    });
+  async searchCompaniesByName(
+    query: string,
+    limit?: number,
+    exchange?: string
+  ): Promise<StockSearchResultDto[]> {
+    const params: Record<string, string> = { query };
+
+    if (limit) {
+      params.limit = limit.toString();
+    }
+
+    if (exchange) {
+      params.exchange = exchange;
+    }
+
+    return this.makeRequest<StockSearchResultDto[]>('search-name', params);
   }
 
   async getStockQuote(symbol: string): Promise<StockQuoteDto> {

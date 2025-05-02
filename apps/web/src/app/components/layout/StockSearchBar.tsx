@@ -83,6 +83,8 @@ const StockSearchBar: React.FC = observer(() => {
     e.stopPropagation();
     portfolioStore.addStock(stock.symbol);
     setDropdownVisible(false);
+    stockStore.clearSearch();
+
   };
 
   // Search dropdown menu content

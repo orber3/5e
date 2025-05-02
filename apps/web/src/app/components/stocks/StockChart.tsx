@@ -73,7 +73,7 @@ const StockChart: React.FC<StockChartProps> = ({ stock }) => {
       </ResponsiveContainer>
       <Typography.Text style={{ display: 'block', marginTop: 10 }}>
         <strong>Change:</strong> ${stock.change.toFixed(2)} (
-        {stock?.changePercentage?.toFixed(2)}%)
+        {stock?.changesPercentage?.toFixed(2)}%)
       </Typography.Text>
       {stock.marketCap !== undefined && (
         <Typography.Text style={{ display: 'block', marginTop: 5 }}>

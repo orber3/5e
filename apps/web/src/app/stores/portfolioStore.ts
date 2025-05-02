@@ -68,15 +68,11 @@ export class PortfolioStore {
       await httpService.post(PORTFOLIO_ENDPOINTS.BASE, { stockSymbol: symbol });
 
       runInAction(() => {
-        // Add the new stock to the local array without reloading the entire portfolio
-        // This will prevent a second API call
-        const newStock: PortfolioStock = {
-          symbol,
-          addedAt: new Date(),
-        };
-        this.portfolioStocks = [...this.portfolioStocks, newStock];
         this.isAdding = false;
       });
+
+      // Load the updated portfolio from server instead of manually updating
+      await this.loadPortfolio();
 
       toast.success(`${symbol} added to portfolio`);
     } catch (error: any) {

@@ -16,7 +16,7 @@ export interface StockQuote {
   symbol: string;
   name: string;
   price: number;
-  changePercentage: number;
+  changesPercentage: number;
   change: number;
   dayLow?: number;
   dayHigh?: number;
@@ -100,6 +100,7 @@ export class StockStore {
   };
 
   clearSearch = () => {
+    console.log('clearSearch');
     this.searchQuery = '';
     this.searchResults = [];
   };

@@ -21,14 +21,14 @@ const StockHeader: React.FC<StockHeaderProps> = ({
   isAdding,
   onAddToPortfolio,
 }) => {
-  // Determine if price change is positive, negative, or neutral
-  const isPriceUp = stock.changePercentage > 0;
-  const isPriceDown = stock.changePercentage < 0;
+  const isPriceUp = stock.changesPercentage > 0;
+  const isPriceDown = stock.changesPercentage < 0;
 
-  // Format price change as percentage with sign
-  const priceChangeFormatted = `${
-    stock.changePercentage >= 0 ? '+' : ''
-  }${stock.changePercentage?.toFixed(2)}%`;
+  const priceChangeFormatted = stock.changesPercentage
+    ? `${
+        stock.changesPercentage >= 0 ? '+' : ''
+      }${stock.changesPercentage?.toFixed(2)}%`
+    : '-';
 
   return (
     <Card>

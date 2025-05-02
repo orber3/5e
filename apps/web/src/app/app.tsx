@@ -17,7 +17,7 @@ export function App() {
         <ToastContainer
           position="top-right"
           autoClose={3000}
-          hideProgressBar={false}
+          hideProgressBar={true}
           newestOnTop
           closeOnClick
           rtl={false}
@@ -32,13 +32,11 @@ export function App() {
             element={<Navigate to={AppRoutes.PORTFOLIO} replace />}
           />
 
-
           <Route path={AppRoutes.LOGIN} element={<LoginPage />} />
           <Route path={AppRoutes.REGISTER} element={<RegisterPage />} />
 
           {/* Protected Routes */}
           <Route element={<ProtectedRoute />}>
-
             <Route path={AppRoutes.PORTFOLIO} element={<PortfolioPage />} />
             <Route
               path={AppRoutes.STOCK_DETAILS}
