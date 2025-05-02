@@ -104,7 +104,7 @@ To run end-to-end tests for the web application:
 nx e2e web-e2e
 ```
 
-**Note**: The Playwright tests are currently experiencing issues related to rate limiting from external stock APIs. Some locators may need to be fixed . this tests arent functional ATM.
+**Note**: The Playwright tests are currently experiencing issues related to rate limiting from external stock APIs. Some locators may need to be fixed . this tests aren't functional ATM.
 
 ## Development
 
@@ -120,7 +120,6 @@ nx e2e web-e2e
 - The stock data cache duration is currently set to 15 minutes. In a production environment, this should be controlled from a remote key-value store for dynamic adjustments , and most likely will be implemented in a redis server.
 
 ### Technical Architecture
-
 
 ```mermaid
 flowchart TD
