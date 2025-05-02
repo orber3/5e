@@ -1,8 +1,9 @@
 import React from 'react';
 import { ColumnsType } from 'antd/es/table';
-import { Typography } from 'antd';
 import { PortfolioStock } from '@app/stores/portfolioStore';
 import StockTableActions from './StockTableActions';
+import { formatPercentageChange } from '../util';
+import { Typography } from 'antd';
 
 const { Text } = Typography;
 
@@ -16,14 +17,6 @@ export interface StockTableColumnProps {
 /**
  * Format percentage change for display with color
  */
-export const formatPercentageChange = (change: number | undefined) => {
-  if (change === undefined) return '-';
-
-  const color = change >= 0 ? 'green' : 'red';
-  const prefix = change >= 0 ? '+' : '';
-
-  return <Text style={{ color }}>{`${prefix}${change.toFixed(2)}%`}</Text>;
-};
 
 /**
  * Get stock table columns with sorting and rendering logic
@@ -69,7 +62,7 @@ export const getStockTableColumns = ({
     },
     {
       title: 'Change',
-      dataIndex: ['quote', 'changesPercentage'],
+      dataIndex: ['quote', 'changePercentage'],
       key: 'change',
       sorter: (a: PortfolioStock, b: PortfolioStock) => {
         const changeA = a.quote?.changesPercentage || 0;

@@ -2,9 +2,11 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "outDir": "dist",
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
     "tsBuildInfoFile": "dist/tsconfig.app.tsbuildinfo",
+    "allowImportingTsExtensions": true,
     "jsx": "react-jsx",
-    "lib": ["dom"],
     "types": [
       "node",
       "@nx/react/typings/cssmodule.d.ts",
@@ -50,9 +52,5 @@
     "src/**/*.tsx",
     "src/**/*.d.ts"
   ],
-  "references": [
-    {
-      "path": "../../libs/tsconfig.lib.json"
-    }
-  ]
+  "references": []
 }

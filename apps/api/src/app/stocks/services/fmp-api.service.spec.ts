@@ -85,7 +85,7 @@ describe('FmpApiService', () => {
 
       expect(result).toEqual(mockResults);
       expect(httpService.get).toHaveBeenCalledWith(
-        expect.stringContaining('search-symbol?query=AAPL&apikey=mock-api-key')
+        expect.stringContaining('search-ticker?query=AAPL&apikey=mock-api-key')
       );
     });
 
@@ -104,6 +104,64 @@ describe('FmpApiService', () => {
       );
 
       await expect(service.searchStocks('AAPL')).rejects.toThrow(
+        InternalServerErrorException
+      );
+    });
+  });
+
+  describe('searchCompaniesByName', () => {
+    it('should return companies matching a name search query', async () => {
+      const mockResults = [
+        {
+          symbol: 'AAPL',
+          name: 'Apple Inc.',
+          exchange: 'NASDAQ',
+          type: 'stock',
+        },
+        {
+          symbol: 'AAPL.BA',
+          name: 'Apple Inc.',
+          exchange: 'BCBA',
+          type: 'stock',
+        },
+      ];
+
+      // Mock cache miss
+      cacheManager.get.mockResolvedValueOnce(null);
+
+      jest.spyOn(httpService, 'get').mockImplementation(() =>
+        of({
+          data: mockResults,
+          status: 200,
+          statusText: 'OK',
+          headers: {},
+          config: { url: '' },
+        } as AxiosResponse)
+      );
+
+      const result = await service.searchCompaniesByName('Apple');
+
+      expect(result).toEqual(mockResults);
+      expect(httpService.get).toHaveBeenCalledWith(
+        expect.stringContaining('search-name?query=Apple&apikey=mock-api-key')
+      );
+    });
+
+    it('should throw an error when API request fails', async () => {
+      // Mock cache miss
+      cacheManager.get.mockResolvedValueOnce(null);
+
+      jest.spyOn(httpService, 'get').mockImplementation(() =>
+        throwError(
+          () =>
+            ({
+              response: { status: 500 },
+              message: 'API Error',
+            } as AxiosError)
+        )
+      );
+
+      await expect(service.searchCompaniesByName('Apple')).rejects.toThrow(
         InternalServerErrorException
       );
     });
@@ -140,7 +198,7 @@ describe('FmpApiService', () => {
 
       expect(result).toEqual(mockQuote[0]);
       expect(httpService.get).toHaveBeenCalledWith(
-        expect.stringContaining('quote?symbol=AAPL&apikey=mock-api-key')
+        expect.stringContaining('quote/AAPL?apikey=mock-api-key')
       );
     });
 
@@ -192,18 +250,20 @@ describe('FmpApiService', () => {
       // Mock cache miss for profile request
       cacheManager.get.mockResolvedValueOnce(null);
 
-      jest.spyOn(httpService, 'get').mockImplementation((url) => {
-        if (url.includes('profile')) {
-          return of({
-            data: mockProfile,
-            status: 200,
-            statusText: 'OK',
-            headers: {},
-            config: { url: '' },
-          } as AxiosResponse);
-        }
-        return of({} as AxiosResponse);
-      });
+      const getSpy = jest
+        .spyOn(httpService, 'get')
+        .mockImplementation((url) => {
+          if (url.includes('profile')) {
+            return of({
+              data: mockProfile,
+              status: 200,
+              statusText: 'OK',
+              headers: {},
+              config: { url: '' },
+            } as AxiosResponse);
+          }
+          return of({} as AxiosResponse);
+        });
 
       const result = await service.getStockDetails('AAPL');
 
@@ -212,6 +272,9 @@ describe('FmpApiService', () => {
         ...mockProfile[0],
       });
       expect(service.getStockQuote).toHaveBeenCalledWith('AAPL');
+      expect(getSpy).toHaveBeenCalledWith(
+        expect.stringContaining('profile?symbol=AAPL&apikey=mock-api-key')
+      );
     });
 
     it('should return just quote data if no profile data is available', async () => {

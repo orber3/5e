@@ -6,8 +6,8 @@ import { PortfolioStock } from '@app/stores/portfolioStore';
 import { getStockDetailsRoute } from '@app/routes';
 import { TableProps } from 'antd';
 
-// Import columns configuration
-import { getStockTableColumns } from './components';
+// Import columns configuration directly from tsx file
+import { getStockTableColumns } from './components/StockTableColumns.tsx';
 
 interface StockTableProps {
   stocks: PortfolioStock[];

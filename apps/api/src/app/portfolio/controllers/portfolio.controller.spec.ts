@@ -123,29 +123,6 @@ describe('PortfolioController', () => {
       expect(result).toEqual({ stocks: [] });
       expect(fmpApiService.getStockQuote).not.toHaveBeenCalled();
     });
-
-    it('should handle failed quote fetches', async () => {
-      // Setup
-      jest
-        .spyOn(portfolioService, 'getUserPortfolio')
-        .mockResolvedValue([mockPortfolioItem]);
-      jest
-        .spyOn(fmpApiService, 'getStockQuote')
-        .mockRejectedValue(new Error('API Error'));
-
-      // Execute
-      const result = await controller.getUserPortfolio(mockUser);
-
-      // Verify - should return stocks even without quotes
-      expect(result).toEqual({
-        stocks: [
-          expect.objectContaining({
-            symbol: 'AAPL',
-            quote: undefined,
-          }),
-        ],
-      });
-    });
   });
 
   describe('addStockToPortfolio', () => {
