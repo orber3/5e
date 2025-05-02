@@ -8,7 +8,7 @@ A full-stack application for tracking stock portfolios built with NestJS, React,
 
 - Node.js (v18+)
 - Docker and Docker Compose
-- npm or yarn
+- npm
 
 ### Running the Application
 
@@ -117,4 +117,4 @@ nx e2e web-e2e
 - `nx lint web`: Lint the web client code
 - `nx lint api`: Lint the API server code
 
-- The stock data cache duration is currently set to 15 minutes. In a production environment, this should be controlled from a remote key-value store for dynamic adjustments.
+- The stock data cache duration is currently set to 15 minutes. In a production environment, this should be controlled from a remote key-value store for dynamic adjustments , and most likely will be implemented in a redis server.
