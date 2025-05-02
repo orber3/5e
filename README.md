@@ -104,7 +104,7 @@ To run end-to-end tests for the web application:
 nx e2e web-e2e
 ```
 
-**Note**: The Playwright tests are currently experiencing issues related to rate limiting from external stock APIs. Some locators may need to be fixed to make the tests more reliable.
+**Note**: The Playwright tests are currently experiencing issues related to rate limiting from external stock APIs. Some locators may need to be fixed . this tests arent functional ATM.
 
 ## Development
 
