@@ -24,3 +24,7 @@ export const PortfolioSchema = SchemaFactory.createForClass(Portfolio);
 
 // Create a compound index to prevent duplicate stocks in a user's portfolio
 PortfolioSchema.index({ userId: 1, stockSymbol: 1 }, { unique: true });
+
+// Add additional indexes for common query patterns
+PortfolioSchema.index({ stockSymbol: 1 });
+PortfolioSchema.index({ createdAt: -1 });

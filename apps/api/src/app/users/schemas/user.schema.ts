@@ -54,3 +54,4 @@ UserSchema.methods.comparePassword = async function (
 ): Promise<boolean> {
   return bcrypt.compare(candidatePassword, this.password);
 };
+UserSchema.index({ email: 1 });
