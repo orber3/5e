@@ -19,8 +19,3 @@ export function getTestStockSymbols(): string[] {
 /**
  * Get a random test stock symbol
  */
-export function getRandomTestStock(): string {
-  const symbols = getTestStockSymbols();
-  const randomIndex = Math.floor(Math.random() * symbols.length);
-  return symbols[randomIndex];
-}

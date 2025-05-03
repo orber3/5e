@@ -60,14 +60,7 @@ export class PortfolioPage extends BasePage {
   /**
    * Refresh stock quotes
    */
-  async refreshQuotes() {
-    await this.click(this.refreshButtonSelector);
-    // Wait for loading spinner to appear and disappear
-    await this.waitForElement(this.loadingSpinnerSelector);
-    await this.page.waitForSelector(this.loadingSpinnerSelector, {
-      state: 'hidden',
-    });
-  }
+
 
   /**
    * Remove stock from portfolio

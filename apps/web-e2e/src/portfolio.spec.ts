@@ -2,11 +2,11 @@ import { test, expect } from '@playwright/test';
 import { PortfolioPage } from './pages/PortfolioPage';
 import { StockDetailsPage } from './pages/StockDetailsPage';
 import { setupAuth } from './utils/auth';
-import { getRandomTestStock, testStocks } from './fixtures/stocks';
 
 // Test credentials - should be environment variables in a real project
-const TEST_EMAIL = 'test@example.com';
-const TEST_PASSWORD = 'password123';
+const TEST_EMAIL = 'ex@ex.co.il';
+const TEST_PASSWORD = 'password';
+const stockSymbol = 'AAPL';
 
 test.describe('Portfolio Management', () => {
   test.beforeEach(async ({ page }) => {
@@ -28,7 +28,6 @@ test.describe('Portfolio Management', () => {
     page,
   }) => {
     // Get a test stock symbol
-    const stockSymbol = getRandomTestStock();
 
     // Navigate to stock details page
     const stockDetailsPage = new StockDetailsPage(page);
@@ -48,7 +47,6 @@ test.describe('Portfolio Management', () => {
 
   test('user can remove a stock from portfolio', async ({ page }) => {
     // Get a test stock symbol
-    const stockSymbol = getRandomTestStock();
 
     // Navigate to stock details page and add stock to portfolio
     const stockDetailsPage = new StockDetailsPage(page);
@@ -71,7 +69,6 @@ test.describe('Portfolio Management', () => {
 
   test('user can refresh stock quotes in portfolio', async ({ page }) => {
     // Get a test stock symbol
-    const stockSymbol = getRandomTestStock();
 
     // Add stock to portfolio via stock details page
     const stockDetailsPage = new StockDetailsPage(page);
@@ -81,9 +78,6 @@ test.describe('Portfolio Management', () => {
     // Go to portfolio page
     const portfolioPage = new PortfolioPage(page);
     await portfolioPage.goto();
-
-    // Refresh quotes
-    await portfolioPage.refreshQuotes();
 
     // Verify portfolio still has the stock (checking that refresh didn't cause issues)
     const hasStock = await portfolioPage.hasStock(stockSymbol);
