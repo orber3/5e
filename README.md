@@ -1,4 +1,4 @@
-# Y - Stock Portfolio Application
+# Stock Portfolio Application
 
 A full-stack application for tracking stock portfolios built with NestJS, React, and MongoDB.
 
