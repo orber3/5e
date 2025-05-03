@@ -45,6 +45,7 @@ const StockHeader: React.FC<StockHeaderProps> = ({
               value={stock.price}
               precision={2}
               prefix="$"
+              data-testid="price-statistic"
             />
             <Statistic
               title={STOCK_DETAILS_PAGE.CHANGE}
@@ -59,6 +60,7 @@ const StockHeader: React.FC<StockHeaderProps> = ({
                   <ArrowDownOutlined />
                 ) : null
               }
+              data-testid="change-statistic"
             />
           </Space>
         </Col>

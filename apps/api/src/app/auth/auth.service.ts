@@ -2,6 +2,8 @@ import {
   Injectable,
   UnauthorizedException,
   ConflictException,
+  OnModuleInit,
+  Logger,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -11,12 +13,58 @@ import { LoginDto } from './dto/login.dto';
 import { User, UserDocument } from '../users/schemas/user.schema';
 
 @Injectable()
-export class AuthService {
+export class AuthService implements OnModuleInit {
+  private readonly logger = new Logger(AuthService.name);
+
   constructor(
     private usersService: UsersService,
     private jwtService: JwtService,
     private configService: ConfigService
   ) {}
+
+  /**
+   * Initialize test user if it doesn't exist
+   */
+  async onModuleInit() {
+    // Only initialize test user in development or test environments
+    const nodeEnv = this.configService.get<string>('NODE_ENV', 'development');
+    const shouldInitTestUser = ['development', 'test'].includes(nodeEnv);
+
+    if (!shouldInitTestUser) {
+      this.logger.log(
+        'Skipping test user initialization in production environment'
+      );
+      return;
+    }
+
+    try {
+      // Get test user credentials from environment variables, or use defaults
+      const testEmail = this.configService.get<string>(
+        'TEST_USER_EMAIL',
+        'test@example.co.il'
+      );
+      const testPassword = this.configService.get<string>(
+        'TEST_USER_PASSWORD',
+        'password'
+      );
+
+      this.logger.log('Checking if test user exists...');
+      const existingUser = await this.usersService.getUserByEmail(testEmail);
+
+      if (!existingUser) {
+        this.logger.log('Test user not found. Creating test user...');
+        await this.register({
+          email: testEmail,
+          password: testPassword,
+        });
+        this.logger.log(`Test user "${testEmail}" created successfully`);
+      } else {
+        this.logger.log(`Test user "${testEmail}" already exists`);
+      }
+    } catch (error) {
+      this.logger.error('Failed to initialize test user', error);
+    }
+  }
 
   /**
    * Register a new user

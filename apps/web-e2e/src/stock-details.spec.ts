@@ -4,8 +4,8 @@ import { setupAuth } from './utils/auth';
 import { getTestStockSymbols } from './fixtures/stocks';
 
 // Test credentials - should be environment variables in a real project
-const TEST_EMAIL = 'test@example.com';
-const TEST_PASSWORD = 'password123';
+const TEST_EMAIL = 'ex@ex.co.il';
+const TEST_PASSWORD = 'password';
 
 test.describe('Stock Details', () => {
   test.beforeEach(async ({ page }) => {

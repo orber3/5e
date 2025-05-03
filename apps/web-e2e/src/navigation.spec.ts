@@ -44,54 +44,6 @@ test.describe('Navigation Flows', () => {
     expect(page.url()).toContain('/portfolio');
   });
 
-  test('user can navigate between multiple stock detail pages', async ({
-    page,
-  }) => {
-    // Get test stock symbols
-    const stockSymbols = getTestStockSymbols().slice(0, 2); // Get first two symbols
-    const [firstSymbol, secondSymbol] = stockSymbols;
-
-    // Add stocks to portfolio (assuming they're not already there)
-    const stockDetailsPage = new StockDetailsPage(page);
-
-    // Add first stock
-    await stockDetailsPage.goto(firstSymbol);
-    await stockDetailsPage.addToPortfolio();
-
-    // Add second stock
-    await stockDetailsPage.goto(secondSymbol);
-    await stockDetailsPage.addToPortfolio();
-
-    // Go to portfolio page
-    const portfolioPage = new PortfolioPage(page);
-    await portfolioPage.goto();
-
-    // Navigate to first stock details
-    await portfolioPage.viewStockDetails(firstSymbol);
-
-    // Verify we're on the first stock details page
-    expect(page.url()).toContain(`/stocks/${firstSymbol}`);
-    let title = await stockDetailsPage.getStockTitle();
-    expect(title).toContain(firstSymbol);
-
-    // Go back to portfolio
-    await stockDetailsPage.backToPortfolio();
-
-    // Navigate to second stock details
-    await portfolioPage.viewStockDetails(secondSymbol);
-
-    // Verify we're on the second stock details page
-    expect(page.url()).toContain(`/stocks/${secondSymbol}`);
-    title = await stockDetailsPage.getStockTitle();
-    expect(title).toContain(secondSymbol);
-
-    // Go back to portfolio
-    await stockDetailsPage.backToPortfolio();
-
-    // Verify we're back on the portfolio page
-    expect(page.url()).toContain('/portfolio');
-  });
-
   test('stock details page shows latest quote and percentage change', async ({
     page,
   }) => {

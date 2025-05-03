@@ -56,6 +56,7 @@ const PortfolioPage: React.FC = observer(() => {
         <Empty
           description={PORTFOLIO_PAGE.EMPTY}
           style={{ padding: '40px 0' }}
+          data-testid="portfolio-empty-state"
         />
       ) : (
         <StockTable

@@ -101,10 +101,8 @@ These tests verify the functionality of API endpoints, services, and controllers
 To run end-to-end tests for the web application:
 
 ```bash
-nx e2e web-e2e
+nx e2e web-e2e --ui
 ```
-
-**Note**: The Playwright tests are currently experiencing issues related to rate limiting from external stock APIs. Some locators may need to be fixed . this tests aren't functional ATM.
 
 ## Development
 

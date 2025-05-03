@@ -55,6 +55,7 @@ const StockTable: React.FC<StockTableProps> = observer(
         dataSource={stocks.map((stock) => ({ ...stock, key: stock.symbol }))}
         loading={loading}
         onChange={handleTableChange}
+        
         pagination={{
           pageSize: 10,
           showSizeChanger: true,
